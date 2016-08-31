@@ -57,6 +57,13 @@ int main(int argc, char const *argv[])
   // Inicialiador randomico
   srand(20162);
 
+  // Aloca vetor de termos independentes
+  double *b = (double*)malloc(sizeof(double)*n);
+  // Preenche termos independentes
+  for(i=0; i<n; ++i)
+  {
+    b[i] = independentTermGenerator((i*M_PI)/n);
+  }
   // Aloca diagonais
   double **A = (double**)malloc(sizeof(double*)*k);
   for(i=0; i<=k; ++i)
@@ -75,6 +82,11 @@ int main(int argc, char const *argv[])
     }
     printf("\n");
   }
+  for(j=0; j<n; ++j)
+  {
+    printf("%.5lf ", b[i]);
+  }
+  printf("\n");
 
   return (0);
 }

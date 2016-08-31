@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 
 //=================================================================================================
 
@@ -14,5 +15,10 @@
  * diag: vetor para armazenar os valores da diagonal. Deve ser alocado por quem chama a função.
  ***********************/
 int generateRandomDiagonal(unsigned int N, unsigned int k, unsigned int kMax, double *diag);
+
+//=================================================================================================
+
+
+double independentTermGenerator(double x);
 
 //=================================================================================================

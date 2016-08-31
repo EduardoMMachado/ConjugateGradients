@@ -28,3 +28,8 @@ int generateRandomDiagonal(unsigned int N, unsigned int k, unsigned int kMax, do
 
   return (0);
 }
+
+double independentTermGenerator(double x)
+{
+  return(4*M_PI*M_PI*(sin(2*M_PI*x)+sin(2*M_PI*(M_PI-x))));
+}
