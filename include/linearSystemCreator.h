@@ -1,4 +1,9 @@
+// Implementado por Eduardo Machado
+// 2016
+
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
 //=================================================================================================
 
@@ -9,14 +14,5 @@
  * diag: vetor para armazenar os valores da diagonal. Deve ser alocado por quem chama a função.
  ***********************/
 int generateRandomDiagonal(unsigned int N, unsigned int k, unsigned int kMax, double *diag);
-
-//=================================================================================================
-
-/***********************
- * N: tamanho do sistema linear
- * k: numero de bandas do sistema linear
- * A: matriz para armazenar os valores das diagonais. É alocado na função
- ***********************/
-int generateRandomDiagonalMatrix(unsigned int N, unsigned int k, double **A);
 
 //=================================================================================================
