@@ -1,15 +1,16 @@
-// Implementado por Eduardo Machado
+// Implementado por Eduardo Machado e Bruna Maciel
 // 2016
 
 #include "linearSystemCreator.h"
 
 int main(int argc, char const *argv[])
 {
+  // Variáveis para parâmetros de entrada
   unsigned int n, k, maxIter = 0;
-  unsigned int i, j;
-  double tolerance;
+  double tolerance = 0;
   const char *outFileName;
-  FILE* outFile;
+  // Demais variáveis
+  unsigned int i, j;
 
   // Verifica o número de parâmetros de entrada
   if(argc < 3)
@@ -59,10 +60,13 @@ int main(int argc, char const *argv[])
 
   // Aloca vetor de termos independentes
   double *b = (double*)malloc(sizeof(double)*n);
-  // Preenche termos independentes
+  // Aloca vetor de soluções lineares
+  double *x = (double*)malloc(sizeof(double)*n);
+  // Preenche termos independentes e zera o vetor de soluções (x0)
   for(i=0; i<n; ++i)
   {
     b[i] = independentTermGenerator((i*M_PI)/n);
+    x[i] = 0.0;
   }
   // Aloca diagonais
   double **A = (double**)malloc(sizeof(double*)*k);
@@ -73,20 +77,25 @@ int main(int argc, char const *argv[])
     generateRandomDiagonal(n, i, k, A[i]);
   }
 
+  // ===========================================================================
+  // Impressão das diagonais da matriz (Debug)
+  // for(i=0; i<=k; ++i)
+  // {
+  //   for(j=0; j<n; ++j)
+  //   {
+  //     printf("%.5lf ", A[i][j]);
+  //   }
+  //   printf("\n");
+  // }
+  // for(j=0; j<n; ++j)
+  // {
+  //   printf("%.5lf ", b[i]);
+  // }
+  // printf("\n");
+  // ===========================================================================
 
-  for(i=0; i<=k; ++i)
-  {
-    for(j=0; j<n; ++j)
-    {
-      printf("%.5lf ", A[i][j]);
-    }
-    printf("\n");
-  }
-  for(j=0; j<n; ++j)
-  {
-    printf("%.5lf ", b[i]);
-  }
-  printf("\n");
+
+
 
   return (0);
 }

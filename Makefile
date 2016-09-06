@@ -1,4 +1,4 @@
-# Implementado por Eduardo Machado
+# Implementado por Eduardo Machado e Bruna Maciel
 # 2016
 
 CC=gcc
