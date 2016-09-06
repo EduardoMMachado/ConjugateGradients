@@ -50,9 +50,7 @@ int conjugateGradients(double **A, double *b, double *x, unsigned int N, unsigne
           		z[i] += A[i*N+j] * v[j];
       	}
 
-    	//s = (rt*r)/vt*z = aux /vt*z
-
-    	//s_aux = vt*z
+    	//s = NORMA/vt*z
     	for (i = 0; i < N; i++){
     		s = norm[n_iter] / v[i] * z[i];
     	}
