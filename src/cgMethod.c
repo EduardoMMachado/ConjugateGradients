@@ -42,12 +42,12 @@ int conjugateGradients(double **A, double *b, double *x, unsigned int N, unsigne
 
     norm[n_iter] = normCalculator(r, N);
 	
-    for(n_iter = 0 ; n_iter <= maxIter ; n_iter++){
+    for(n_iter = 0 ; n_iter <= maxIter ; n_iter++){ // COLOCAR SAIDA COM ERRO POR CAUSA DA IMPRESSAO NO ARQ
     	
 		//z=Av
 		for (i = 0; i < N; i++) {
         	for (j = 0; j < N; j++)
-          		z[i] += A[i*N+j] * v[j];
+          		z[i] += A[i*N+j] * v[j]; //ALTERAR INDICES DE A -> SO TEMOS DIAGONAIS
       	}
 
     	//s = NORMA/vt*z
@@ -79,6 +79,10 @@ int conjugateGradients(double **A, double *b, double *x, unsigned int N, unsigne
 
 
     }
+
+   //OBS1: em s onde usa a norma, no livro eh usada uma variavel aux = rt*r
+   //OBS2: o calculo da norma no livro eh feita por uma variavel aux1 =rt*r
+   //OBS3: o criterio de parada do if de tolerancia eh aux1 e no calculo no novo vetor v de passos no lugar da norma eh usado o m = aux1/aux e o aux recebe o valor de aux 1
 
  //=============================== FIM ALGORITMO DO LIVRO ==============================================
 
