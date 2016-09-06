@@ -40,16 +40,10 @@ int conjugateGradients(double **A, double *b, double *x, unsigned int N, unsigne
 	for (i = 0; i < N; i++)
     	v[i] = r[i] = b[i];
 
-    //aux = rt*r
-    //na teoria rt=r pois r eh vetor entao, aux = r*r
-    for (i = 0; i < N; i++)
-    	aux[i] = r[i] *r[i];
-
     norm[n_iter] = normCalculator(r, N);
-	error[n_iter] = norm[n_iter];
-
-    while(n_iter <= maxIter){
 	
+    for(n_iter = 0 ; n_iter <= maxIter ; n_iter++){
+    	
 		//z=Av
 		for (i = 0; i < N; i++) {
         	for (j = 0; j < N; j++)
@@ -60,8 +54,9 @@ int conjugateGradients(double **A, double *b, double *x, unsigned int N, unsigne
 
     	//s_aux = vt*z
     	for (i = 0; i < N; i++){
-    		s = aux[i] / v[i] * z[i];
+    		s = norm[n_iter] / v[i] * z[i];
     	}
+
 
     	//prox x = x + s*v
     	for (i = 0; i < N; i++) {
@@ -87,7 +82,7 @@ int conjugateGradients(double **A, double *b, double *x, unsigned int N, unsigne
 
     }
 
- //=============================== FIM METODO DO LIVRO ==============================================
+ //=============================== FIM ALGORITMO DO LIVRO ==============================================
 
 	norm[n_iter] = normCalculator(r, N);
 	error[n_iter] = norm[n_iter];
