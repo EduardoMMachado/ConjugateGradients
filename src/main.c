@@ -79,19 +79,19 @@ int main(int argc, char const *argv[])
 
   // ===========================================================================
   // Impressão das diagonais da matriz (Debug)
-  // for(i=0; i<=k; ++i)
-  // {
-  //   for(j=0; j<n; ++j)
-  //   {
-  //     printf("%.5lf ", A[i][j]);
-  //   }
-  //   printf("\n");
-  // }
-  // for(j=0; j<n; ++j)
-  // {
-  //   printf("%.5lf ", b[i]);
-  // }
-  // printf("\n");
+  for(i=0; i<=k; ++i)
+  {
+    for(j=0; j<n; ++j)
+    {
+      printf("%.5lf ", A[i][j]);
+    }
+    printf("\n");
+  }
+  for(j=0; j<n; ++j)
+  {
+    printf("%.5lf ", b[j]);
+  }
+  printf("\n");
   // ===========================================================================
 
 

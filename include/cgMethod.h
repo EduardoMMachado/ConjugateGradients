@@ -15,8 +15,9 @@ double timestamp(void);
 //	b = vetor de termos independentes
 //	x = vetor soluçao
 //	N = numero de dimensoes do sistema
+//  k = numero de bandas
 //	maxIter = numero maximo de iteraçoes definido pelo usuario ou o numero de dimensoes do sistema
 //	tolerance = o erro aproximado absoluto máximo (se houver)
 // 	outFileName = nome do arquivo de saida
 // =============================================================================
-int conjugateGradients(double **A, double *b, double *x, unsigned int N, unsigned int maxIter, unsigned int tolerance, char *outFileName);
+int conjugateGradients(double **A, double *b, double *x, unsigned int N, unsigned int k, unsigned int maxIter, unsigned int tolerance, char *outFileName);

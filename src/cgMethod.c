@@ -12,16 +12,23 @@ double timestamp(void){
 // =============================================================================
 
 // =============================================================================
-int conjugateGradients(double **A, double *b, double *x, unsigned int N, unsigned int maxIter, unsigned int tolerance, char *outFileName){
+int conjugateGradients(double **A, double *b, double *x, unsigned int N, unsigned int k, unsigned int maxIter, unsigned int tolerance, char *outFileName){
 	unsigned int n_iter = 0;																											// Número de iterações feitas
 	double rTimeMin, rTimeMean, rTimeMax, rTimeStart, rTimeEnd, rTime;						// Tempos de resíduo
 	double cgTimeMin, cgTimeMean, cgTimeMax, cgTimeStart, cgTimeEnd, cgTime;			// Tempos do cálculo do método
 	double stepSize;
+	int i,j;
 
 	// Aloca vetores de resíduo e norma
 	double *r = (double*) malloc(N*sizeof(double));
 	double *norm = (double*) malloc(maxIter*sizeof(double));
 	double *error = (double*) malloc(maxIter*sizeof(double));
+
+	// Aloca vetores auxiliares do metodo
+	double *v = (double*) malloc(N*sizeof(double)); //vetor de direçao
+	double *s = (double*) malloc(N*sizeof(double)); //vetor de passos
+	double *z = (double*) malloc(N*sizeof(double));
+	double *aux = (double*) malloc(N*sizeof(double));
 
 	// Inicializa os resíduos e norma para a iteração 0
 
@@ -29,65 +36,12 @@ int conjugateGradients(double **A, double *b, double *x, unsigned int N, unsigne
 	residueCalculator(r, A, x, b, N);
 	rTimeEnd = timestamp();
 
-//============================= ALGORITMO DO LIVRO ===========================================
-	double *v = (double*) malloc(N*sizeof(double)); //vetor de direçao
-	double *s = (double*) malloc(N*sizeof(double)); //vetor de passos
-	double *z = (double*) malloc(N*sizeof(double));
-	double *aux = (double*) malloc(N*sizeof(double));
-	int i,j;
+	norm[n_iter] = normCalculator(r, N);
+	error[n_iter] = norm[n_iter];
 
 	//r=b e v=b
 	for (i = 0; i < N; i++)
     v[i] = r[i] = b[i];
-
-  norm[n_iter] = normCalculator(r, N);
-
-  for(n_iter = 0 ; n_iter <= maxIter ; n_iter++){ // COLOCAR SAIDA COM ERRO POR CAUSA DA IMPRESSAO NO ARQ
-
-  	//z=Av
-  	for (i = 0; i < N; i++) {
-    	for (j = 0; j < N; j++)
-      		z[i] += A[i*N+j] * v[j]; //ALTERAR INDICES DE A -> SO TEMOS DIAGONAIS
-  	}
-
-  	//s = NORMA/vt*z
-  	for (i = 0; i < N; i++){
-  		s = norm[n_iter] / v[i] * z[i];
-  	}
-
-
-  	//prox x = x + s*v
-  	for (i = 0; i < N; i++) {
-  		x[i] = x[i] + s[i]*v[i];
-  	}
-
-  	//calcula o residuo -> r= r - s*z
-  	rTimeStart = timestamp();
-		residueCalculator(r, s, z);
-		rTimeEnd = timestamp();
-
-  	norm[n_iter] = normCalculator(r, N);
-		error[n_iter] = abs(norm[n_iter] - norm[n_iter-1]);
-
-		//se o erro for menor que a tolerancia retorna 0 e a funçao acaba com sucesso, e o vetor x eh a soluçao
-		if(error[n_iter] < tolerance)
-			return 0;
-
-		//calcula novo vetor de direçoes
-		for (i = 0; i < N; i++)
-  		v[i] = r[i] + ( norm[n_iter]/norm[n_iter-1] ) *v[i];
-
-
-    }
-
-   //OBS1: em s onde usa a norma, no livro eh usada uma variavel aux = rt*r
-   //OBS2: o calculo da norma no livro eh feita por uma variavel aux1 =rt*r
-   //OBS3: o criterio de parada do if de tolerancia eh aux1 e no calculo no novo vetor v de passos no lugar da norma eh usado o m = aux1/aux e o aux recebe o valor de aux 1
-
- //=============================== FIM ALGORITMO DO LIVRO ==============================================
-
-	norm[n_iter] = normCalculator(r, N);
-	error[n_iter] = norm[n_iter];
 
 	rTimeMin = rTime;
 	rTimeMean = rTime;
@@ -95,18 +49,43 @@ int conjugateGradients(double **A, double *b, double *x, unsigned int N, unsigne
 
 	while((n_iter <= maxIter)and(error[i] > tolerance))
 	{
-		n_iter++;
+		
+		cgTimeStart = timestamp();
 
 		// =========================================================================
 		// Método
 		// =========================================================================
 
+		//z=Av
+  	for (i = 0; i < N; i++) {
+  		jv = i
+    	for (j = 0; j <= k; j++)
+    	{
+      	z[i] += A[i][j] * v[jv]; //ALTERAR INDICES DE A -> SO TEMOS DIAGONAIS
 
+      	// faz calculo para a parte de baixo da matriz
+	    	if(j != 0)
+	    	{
+	    		z[i] += A[i][j] * v[jv-j];
+	    	}
 
+      	jv++;
+      }
+  	}
+
+  	// CONFERIR V TRANSPOSTO EM RELAÇAO A NORMA
+  	//s = NORMA/vt*z
+  	for (i = 0; i < N; i++){
+  		s = norm[n_iter] / v[i] * z[i];
+  	}
+
+  	//prox x = x + s*v
+  	for (i = 0; i < N; i++) {
+  		x[i] = x[i] + s[i]*v[i];
+  	}
 
 		// =========================================================================
 
-		cgTimeStart = timestamp();
 
 		// Calculo dos resíduos
 		rTimeStart = timestamp();
@@ -116,6 +95,10 @@ int conjugateGradients(double **A, double *b, double *x, unsigned int N, unsigne
 		norm[n_iter] = normCalculator(r, N);
 		// Calculo do erro
 		error[i] = abs(norm[i] - norm[i-1]);
+
+		//calcula novo vetor de direçoes
+		for (i = 0; i < N; i++)
+  		v[i] = r[i] + ( norm[n_iter]/norm[n_iter-1] ) *v[i]; ////// CONFERIR
 
 		// Calculo de tempos de execução
 		cgTimeEnd = timestamp();
@@ -138,6 +121,13 @@ int conjugateGradients(double **A, double *b, double *x, unsigned int N, unsigne
 		if(rTime < rTimeMin) rTimeMin = rTime;
 		else if(rTime > rTimeMax) rTimeMax = rTime;
 		rTimeMean += rTime;
+
+		n_iter++;
+
+		//OBS1: em s onde usa a norma, no livro eh usada uma variavel aux = rt*r
+   //OBS2: o calculo da norma no livro eh feita por uma variavel aux1 =rt*r
+   //OBS3: o criterio de parada do if de tolerancia eh aux1 e no calculo no novo vetor v de passos no lugar da norma eh usado o m = aux1/aux e o aux recebe o valor de aux 1
+
 	}
 
 
