@@ -73,10 +73,10 @@ int conjugateGradients(double **A, double *b, double *x, unsigned int N, unsigne
       }
   	}
 
-  	// CONFERIR V TRANSPOSTO EM RELAÇAO A NORMA
-  	//s = NORMA/vt*z
+  	
+  	//s = rt*r/vt*z
   	for (i = 0; i < N; i++){
-  		s = norm[n_iter] / v[i] * z[i];
+  		s = (r[i]*r[i]) / v[i] * z[i];
   	}
 
   	//prox x = x + s*v
@@ -89,6 +89,7 @@ int conjugateGradients(double **A, double *b, double *x, unsigned int N, unsigne
 
 		// Calculo dos resíduos
 		rTimeStart = timestamp();
+		//r = r - s*z
 		residueCalculator(r, A, x, b, N);
 		rTimeEnd = timestamp();
 		// Calculo da norma
@@ -124,9 +125,6 @@ int conjugateGradients(double **A, double *b, double *x, unsigned int N, unsigne
 
 		n_iter++;
 
-		//OBS1: em s onde usa a norma, no livro eh usada uma variavel aux = rt*r
-   //OBS2: o calculo da norma no livro eh feita por uma variavel aux1 =rt*r
-   //OBS3: o criterio de parada do if de tolerancia eh aux1 e no calculo no novo vetor v de passos no lugar da norma eh usado o m = aux1/aux e o aux recebe o valor de aux 1
 
 	}
 
