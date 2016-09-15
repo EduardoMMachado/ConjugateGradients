@@ -6,7 +6,7 @@
 int main(int argc, char const *argv[])
 {
   // Variáveis para parâmetros de entrada
-  unsigned int n, k, maxIter = 0;
+  unsigned int n, nBandas, maxIter = 0;
   double tolerance = 0;
   const char *outFileName;
   // Demais variáveis
@@ -17,9 +17,9 @@ int main(int argc, char const *argv[])
   {
       puts("Parametros insuficientes.");
       puts("Use:\n");
-      puts("cgSolver n k -i <maxIter> -t <tolerancia> -o <arquivo_saida>\n");
+      puts("cgSolver n nBandas -i <maxIter> -t <tolerancia> -o <arquivo_saida>\n");
       puts("n: (n>0) parâmetro obrigatório definindo a dimensão do Sistema Linear.\n");
-      puts("k: parâmetro obrigatório definindo o número de bandas da matriz A.\n   k=0 indica uma matriz diagonal. k=1 é uma matriz tridiagonal.\n   k=2 é uma matriz pentadiagonal, e assim por diante.\n");
+      puts("nBandas: parâmetro obrigatório definindo o número de bandas da matriz A.\n");
       puts("-i maxIter: parâmetro opcional definindo o número máximo de iterações a serem\n            executadas. Caso não seja definido, utilizar o valor n.\n");
       puts("-t tolerancia: parâmetro opcional definindo o erro aproximado absoluto máximo,\n               considerando a norma Euclidiana do resíduo.\n");
       puts("-o arquivo_saida: parâmetro obrigatório no qual arquivo_saida é o caminho\n                  completo para o arquivo que vai conter a solução.\n");
@@ -28,7 +28,7 @@ int main(int argc, char const *argv[])
 
   // Leitura dos parâmetros
   n = atoi(argv[1]);
-  k = atoi(argv[2]);
+  nBandas = atoi(argv[2]);
   for(i=3; i<argc; ++i)
   {
     if(strcmp(argv[i], "-i") == 0) maxIter = atoi(argv[i+1]);
@@ -37,7 +37,7 @@ int main(int argc, char const *argv[])
   }
   if(maxIter == 0) maxIter = n;
 
-  printf("%d - %d - %d - %lf - %s\n", n, k, maxIter, tolerance, outFileName);
+  printf("%d - %d - %d - %lf - %s\n", n, nBandas, maxIter, tolerance, outFileName);
 
   // Validação dos argumentos
   if(n<=0)
@@ -45,7 +45,7 @@ int main(int argc, char const *argv[])
     puts("Dimensão do sistema linear inválido.");
     return(-1);
   }
-  else if(k<0)
+  else if(nBandas<1)
   {
     puts("Número de bandas inválido.");
     return(-1);
@@ -69,17 +69,17 @@ int main(int argc, char const *argv[])
     x[i] = 0.0;
   }
   // Aloca diagonais
-  double **A = (double**)malloc(sizeof(double*)*k);
-  for(i=0; i<=k; ++i)
+  double **A = (double**)malloc(sizeof(double*)*nBandas);
+  for(i=0; i<nBandas; ++i)
   {
     A[i] = (double*)malloc(sizeof(double)*n);
     // Preenche as diagonais randomicamente
-    generateRandomDiagonal(n, i, k, A[i]);
+    generateRandomDiagonal(n, i, nBandas, A[i]);
   }
 
   // ===========================================================================
   // Impressão das diagonais da matriz (Debug)
-  for(i=0; i<=k; ++i)
+  for(i=0; i<=nBandas; ++i)
   {
     for(j=0; j<n; ++j)
     {

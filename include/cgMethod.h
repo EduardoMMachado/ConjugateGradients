@@ -9,6 +9,10 @@
 
 double timestamp(void);
 
+int residueCalculator(double *r, double **A, double *x, double *b, unsigned int N);
+
+double normCalculator(double *r, unsigned int N);
+
 // =============================================================================
 //Parametros:
 //	A = matriz de coeficientes do sistema linear

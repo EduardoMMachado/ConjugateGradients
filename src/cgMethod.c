@@ -11,12 +11,22 @@ double timestamp(void){
 }
 // =============================================================================
 
+int residueCalculator(double *r, double **A, double *x, double *b, unsigned int N)
+{
+
+}
+
+double normCalculator(double *r, unsigned int N)
+{
+
+}
+
 // =============================================================================
 int conjugateGradients(double **A, double *b, double *x, unsigned int N, unsigned int k, unsigned int maxIter, unsigned int tolerance, char *outFileName){
 	unsigned int n_iter = 0;																											// Número de iterações feitas
 	double rTimeMin, rTimeMean, rTimeMax, rTimeStart, rTimeEnd, rTime;						// Tempos de resíduo
 	double cgTimeMin, cgTimeMean, cgTimeMax, cgTimeStart, cgTimeEnd, cgTime;			// Tempos do cálculo do método
-	double stepSize;
+	double stepSize, aux, aux1, m, vtz;
 	int i,j;
 
 	// Aloca vetores de resíduo e norma
@@ -26,9 +36,7 @@ int conjugateGradients(double **A, double *b, double *x, unsigned int N, unsigne
 
 	// Aloca vetores auxiliares do metodo
 	double *v = (double*) malloc(N*sizeof(double)); //vetor de direçao
-	double *s = (double*) malloc(N*sizeof(double)); //vetor de passos
 	double *z = (double*) malloc(N*sizeof(double));
-	double *aux = (double*) malloc(N*sizeof(double));
 
 	// Inicializa os resíduos e norma para a iteração 0
 
@@ -47,9 +55,15 @@ int conjugateGradients(double **A, double *b, double *x, unsigned int N, unsigne
 	rTimeMean = rTime;
 	tTimeMax = rTime;
 
+  // aux = rt*r
+  aux = 0.0;
+  for(i = 0; i < N; ++i){
+    aux += r[i]*r[i];
+  }
+
 	while((n_iter <= maxIter)and(error[i] > tolerance))
 	{
-		
+
 		cgTimeStart = timestamp();
 
 		// =========================================================================
@@ -57,11 +71,11 @@ int conjugateGradients(double **A, double *b, double *x, unsigned int N, unsigne
 		// =========================================================================
 
 		//z=Av
-  	for (i = 0; i < N; i++) {
+  	for (i = 0; i < N; ++i) {
   		jv = i
-    	for (j = 0; j <= k; j++)
+    	for (j = 0; j <= k; ++j)
     	{
-      	z[i] += A[i][j] * v[jv]; //ALTERAR INDICES DE A -> SO TEMOS DIAGONAIS
+      	z[i] += A[i][j] * v[jv];
 
       	// faz calculo para a parte de baixo da matriz
 	    	if(j != 0)
@@ -73,15 +87,17 @@ int conjugateGradients(double **A, double *b, double *x, unsigned int N, unsigne
       }
   	}
 
-  	
+    // vt*z
+    vtz = 0.0;
+    for(i = 0; i < N; ++i){
+      vtz += v[i]*z[i];
+    }
   	//s = rt*r/vt*z
-  	for (i = 0; i < N; i++){
-  		s = (r[i]*r[i]) / v[i] * z[i];
-  	}
+  	stepSize = aux / vtz;
 
   	//prox x = x + s*v
-  	for (i = 0; i < N; i++) {
-  		x[i] = x[i] + s[i]*v[i];
+  	for (i = 0; i < N; ++i) {
+  		x[i] = x[i] + stepSize*v[i];
   	}
 
 		// =========================================================================
@@ -92,14 +108,26 @@ int conjugateGradients(double **A, double *b, double *x, unsigned int N, unsigne
 		//r = r - s*z
 		residueCalculator(r, A, x, b, N);
 		rTimeEnd = timestamp();
-		// Calculo da norma
-		norm[n_iter] = normCalculator(r, N);
-		// Calculo do erro
-		error[i] = abs(norm[i] - norm[i-1]);
+
+    // aux1 = rt*r
+    aux1 = 0.0;
+    for(i = 0; i < N; ++i){
+      aux1 += r[i]*r[i];
+    }
+
+    m = aux1 / aux;
+    aux = aux1;
 
 		//calcula novo vetor de direçoes
 		for (i = 0; i < N; i++)
-  		v[i] = r[i] + ( norm[n_iter]/norm[n_iter-1] ) *v[i]; ////// CONFERIR
+  		v[i] = r[i] + (m * v[i]);
+
+
+    // Calculo da norma
+    norm[n_iter] = normCalculator(r, N);
+    // Calculo do erro
+    error[i] = abs(norm[i] - norm[i-1]);
+
 
 		// Calculo de tempos de execução
 		cgTimeEnd = timestamp();
@@ -124,7 +152,6 @@ int conjugateGradients(double **A, double *b, double *x, unsigned int N, unsigne
 		rTimeMean += rTime;
 
 		n_iter++;
-
 
 	}
 
