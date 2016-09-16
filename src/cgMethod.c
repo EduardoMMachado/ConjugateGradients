@@ -4,21 +4,30 @@
 #include "cgMethod.h"
 
 // =============================================================================
-double timestamp(void){
+double timestamp(){
     struct timeval tp;
     gettimeofday(&tp, NULL);
     return((double)(tp.tv_sec*1000.0 + tp.tv_usec/1000.0));
 }
 // =============================================================================
 
-int residueCalculator(double *r, double **A, double *x, double *b, unsigned int N)
+int residueCalculator(double *r, double stepSize, double *z, unsigned int N)
 {
-
+	for (int i = 0; i<=N ;++i){
+		r[i] = r[i] - stepSize*z[i];
+	}
+	return 0;
 }
 
 double normCalculator(double *r, unsigned int N)
 {
+	double norm =0;
 
+	for (int i = 0; i<=N ;++i){
+		norm += r[i] * r[i];
+	}
+	norm = sqrt(norm);
+	return norm;
 }
 
 // =============================================================================
@@ -27,7 +36,7 @@ int conjugateGradients(double **A, double *b, double *x, unsigned int N, unsigne
 	double rTimeMin, rTimeMean, rTimeMax, rTimeStart, rTimeEnd, rTime;						// Tempos de resíduo
 	double cgTimeMin, cgTimeMean, cgTimeMax, cgTimeStart, cgTimeEnd, cgTime;			// Tempos do cálculo do método
 	double stepSize, aux, aux1, m, vtz;
-	int i,j;
+	int i,j, jv;
 
 	// Aloca vetores de resíduo e norma
 	double *r = (double*) malloc(N*sizeof(double));
@@ -40,10 +49,6 @@ int conjugateGradients(double **A, double *b, double *x, unsigned int N, unsigne
 
 	// Inicializa os resíduos e norma para a iteração 0
 
-	rTimeStart = timestamp();
-	residueCalculator(r, A, x, b, N);
-	rTimeEnd = timestamp();
-
 	norm[n_iter] = normCalculator(r, N);
 	error[n_iter] = norm[n_iter];
 
@@ -51,17 +56,13 @@ int conjugateGradients(double **A, double *b, double *x, unsigned int N, unsigne
 	for (i = 0; i < N; i++)
     v[i] = r[i] = b[i];
 
-	rTimeMin = rTime;
-	rTimeMean = rTime;
-	tTimeMax = rTime;
-
   // aux = rt*r
   aux = 0.0;
   for(i = 0; i < N; ++i){
     aux += r[i]*r[i];
   }
 
-	while((n_iter <= maxIter)and(error[i] > tolerance))
+	while((n_iter <= maxIter) && (error[i] > tolerance))
 	{
 
 		cgTimeStart = timestamp();
@@ -72,9 +73,8 @@ int conjugateGradients(double **A, double *b, double *x, unsigned int N, unsigne
 
 		//z=Av
   	for (i = 0; i < N; ++i) {
-  		jv = i
-    	for (j = 0; j <= k; ++j)
-    	{
+  		jv = i;
+    	for (j = 0; j <= k; ++j){
       	z[i] += A[i][j] * v[jv];
 
       	// faz calculo para a parte de baixo da matriz
@@ -104,10 +104,10 @@ int conjugateGradients(double **A, double *b, double *x, unsigned int N, unsigne
 
 
 		// Calculo dos resíduos
-		rTimeStart = timestamp();
-		//r = r - s*z
-		residueCalculator(r, A, x, b, N);
-		rTimeEnd = timestamp();
+	rTimeStart = timestamp();
+	//r = r - s*z
+	residueCalculator(r, stepSize, z, N);
+	rTimeEnd = timestamp();
 
     // aux1 = rt*r
     aux1 = 0.0;
@@ -131,8 +131,8 @@ int conjugateGradients(double **A, double *b, double *x, unsigned int N, unsigne
 
 		// Calculo de tempos de execução
 		cgTimeEnd = timestamp();
-
 		cgTime = cgTimeEnd - cgTimeStart;
+
 		if(n_iter == 1)
 		{
 			cgTimeMin = cgTime;
@@ -156,6 +156,6 @@ int conjugateGradients(double **A, double *b, double *x, unsigned int N, unsigne
 	}
 
 
-	return(0);
+	return 0;
 }
 // =============================================================================
