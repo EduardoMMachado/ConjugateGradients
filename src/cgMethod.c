@@ -69,11 +69,10 @@ int conjugateGradients(double **A, double *b, double *x, unsigned int N, unsigne
 		// =========================================================================
 		// Método
 		// =========================================================================
-puts("=> 1");
 		//z=Av
 	  	for (i = 0; i < N; ++i) {
 	  		jv = i;
-	    	for (j = 0; j < k; ++j){
+	    	for (j = 0; j <= k; ++j){
 	    		if(jv < N){
 		      		z[i] += A[j][i] * v[jv];
 			    }
@@ -85,7 +84,6 @@ puts("=> 1");
 	      		jv++;
 	      	}
 	  	}
-puts("=> 2");
 	    // vt*z
 	    vtz = 0.0;
 	    for(i = 0; i < N; ++i){
@@ -93,42 +91,34 @@ puts("=> 2");
 	    }
 	  	//s = rt*r/vt*z
 	  	stepSize = aux / vtz;
-puts("=> 3");
 	  	//prox x = x + s*v
 	  	for (i = 0; i < N; ++i) {
 	  		x[i] = x[i] + stepSize*v[i];
 	  	}
 
 		// =========================================================================
-puts("=> 4");
 
 		// Calculo dos resíduos
 		rTimeStart = timestamp();
 		//r = r - s*z
 		residueCalculator(r, stepSize, z, N);
 		rTimeEnd = timestamp();
-puts("=> 5");
 	    // aux1 = rt*r
 	    aux1 = 0.0;
 	    for(i = 0; i < N; ++i){
 	      aux1 += r[i]*r[i];
 	    }
-puts("=> 6");
 	    m = aux1 / aux;
 	    aux = aux1;
-puts("=> 7");
 		//calcula novo vetor de direçoes
 		for (i = 0; i < N; i++)
   		v[i] = r[i] + (m * v[i]);
-puts("=> 8");
 
 
 
-puts("=> 9");
 		// Calculo de tempos de execução
 		cgTimeEnd = timestamp();
 		cgTime = cgTimeEnd - cgTimeStart;
-puts("=> 10");
 		if(n_iter == 1)
 		{
 			cgTimeMin = cgTime;
@@ -146,7 +136,6 @@ puts("=> 10");
 		if(rTime < rTimeMin) rTimeMin = rTime;
 		else if(rTime > rTimeMax) rTimeMax = rTime;
 		rTimeMean += rTime;
-puts("=> 11");
 
 
 		n_iter++;

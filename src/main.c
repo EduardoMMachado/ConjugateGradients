@@ -38,8 +38,6 @@ int main(int argc, char const *argv[])
   }
   if(maxIter == 0) maxIter = n;
 
-  printf("%d - %d - %d - %lf - %s\n", n, nBandas, maxIter, tolerance, outFileName);
-
   // Validação dos argumentos
   if(n<=0)
   {
@@ -56,6 +54,8 @@ int main(int argc, char const *argv[])
     puts("Nome do arquivo de saída não encontrado.");
   }
 
+  printf("%d - %d - %d - %lf - %s\n", n, nBandas, maxIter, tolerance, outFileName);
+
   // Inicialiador randomico
   srand(20162);
 
@@ -71,7 +71,7 @@ int main(int argc, char const *argv[])
   }
   // Aloca diagonais
   double **A = (double**)malloc(sizeof(double*)*nBandas);
-  for(i=0; i<nBandas; ++i)
+  for(i=0; i<=nBandas; ++i)
   {
     A[i] = (double*)malloc(sizeof(double)*n);
     // Preenche as diagonais randomicamente
@@ -83,18 +83,18 @@ int main(int argc, char const *argv[])
   // Impressão das diagonais da matriz (Debug)
   printf("===========================================================================\n");
   printf("Impressão das diagonais da matriz (Debug)\n\n");
-  for(i=0; i<nBandas; ++i)
+  for(i=0; i<=nBandas; ++i)
   {
     for(j=0; j<n; ++j)
     {
-      printf("%.5lf ", A[i][j]);
+      printf("%.6lf ", A[i][j]);
     }
     printf("\n");
   }
-
+  puts("======================================");
   for(j=0; j<n; ++j)
   {
-    printf("%.5lf ", b[j]);
+    printf("%.6lf ", b[j]);
   }
   printf("\n");
   printf("===========================================================================\n");
