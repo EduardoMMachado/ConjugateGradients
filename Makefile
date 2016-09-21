@@ -13,12 +13,11 @@ main:	linearSystemCreator cgMethod
 
 linearSystemCreator:
 	$(CC) -c $(SRC)/linearSystemCreator.c $(FLAGS) -I$(INCLUDE) -o $(OBJ)/linearSystemCreator.o
-	ar -cru $(LIB)/linearSystemCreator.a $(OBJ)/linearSystemCreator.o
+	ar -cr $(LIB)/linearSystemCreator.a $(OBJ)/linearSystemCreator.o
 
 cgMethod:
 	$(CC) -c $(SRC)/cgMethod.c $(FLAGS) -I$(INCLUDE) -o $(OBJ)/cgMethod.o
-	ar -cru $(LIB)/cgMethod.a $(OBJ)/cgMethod.o
+	ar -cr $(LIB)/cgMethod.a $(OBJ)/cgMethod.o
 
 clean:
-	rm linearSystemCreator core $(SRC)/*~ $(OBJ)/*o $(LIB)/*a
-	rm cgMethod core $(SRC)/*~ $(OBJ)/*o $(LIB)/*a
+	rm sgSolver core $(SRC)/*~ $(OBJ)/*o $(LIB)/*a

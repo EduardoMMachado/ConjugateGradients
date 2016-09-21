@@ -11,21 +11,23 @@ int main(int argc, char const *argv[])
   double tolerance = 0;
   const char *outFileName;
   // Demais variáveis
-  unsigned int i, j;
+  unsigned int i;
+
 
   // Verifica o número de parâmetros de entrada
   if(argc < 3)
   {
-      puts("Parametros insuficientes.");
-      puts("Use:\n");
-      puts("cgSolver n nBandas -i <maxIter> -t <tolerancia> -o <arquivo_saida>\n");
-      puts("n: (n>0) parâmetro obrigatório definindo a dimensão do Sistema Linear.\n");
-      puts("nBandas: parâmetro obrigatório definindo o número de bandas da matriz A.\n");
-      puts("-i maxIter: parâmetro opcional definindo o número máximo de iterações a serem\n            executadas. Caso não seja definido, utilizar o valor n.\n");
-      puts("-t tolerancia: parâmetro opcional definindo o erro aproximado absoluto máximo,\n               considerando a norma Euclidiana do resíduo.\n");
-      puts("-o arquivo_saida: parâmetro obrigatório no qual arquivo_saida é o caminho\n                  completo para o arquivo que vai conter a solução.\n");
-      return(-1);
+    fprintf(stderr, "Parametros insuficientes.\n");
+    fprintf(stderr, "Use:\n");
+    fprintf(stderr, "./cgSolver n nBandas -i <maxIter> -t <tolerancia> -o <arquivo_saida>\n\n");
+    fprintf(stderr, "n: (n>0) parâmetro obrigatório definindo a dimensão do Sistema Linear.\n");
+    fprintf(stderr, "nBandas: parâmetro obrigatório definindo o número de bandas da matriz A.\n");
+    fprintf(stderr, "-i maxIter: parâmetro opcional definindo o número máximo de iterações a serem\n            executadas. Caso não seja definido, utilizar o valor n.\n");
+    fprintf(stderr, "-t tolerancia: parâmetro opcional definindo o erro aproximado absoluto máximo,\n               considerando a norma Euclidiana do resíduo.\n");
+    fprintf(stderr, "-o arquivo_saida: parâmetro obrigatório no qual arquivo_saida é o caminho\n                  completo para o arquivo que vai conter a solução.\n");
+    return(-1);
   }
+
 
   // Leitura dos parâmetros
   n = atoi(argv[1]);
@@ -38,70 +40,50 @@ int main(int argc, char const *argv[])
   }
   if(maxIter == 0) maxIter = n;
 
+
   // Validação dos argumentos
   if(n<=0)
   {
-    puts("Dimensão do sistema linear inválido.");
+    fprintf(stderr, "Dimensão do sistema linear inválido.\n");
     return(-1);
   }
-  else if(nBandas<1)
+  else if((nBandas<0)||(nBandas > n/2)||(nBandas%2 == 0))
   {
-    puts("Número de bandas inválido.");
+    fprintf(stderr, "Número de bandas inválido.\n");
     return(-1);
   }
   else if(outFileName == NULL)
   {
-    puts("Nome do arquivo de saída não encontrado.");
+    fprintf(stderr, "Nome do arquivo de saída inválido.\n");
+    return(-1);
   }
 
-  printf("%d - %d - %d - %lf - %s\n", n, nBandas, maxIter, tolerance, outFileName);
 
   // Inicialiador randomico
   srand(20162);
+
 
   // Aloca vetor de termos independentes
   double *b = (double*)malloc(sizeof(double)*n);
   // Aloca vetor de soluções lineares
   double *x = (double*)malloc(sizeof(double)*n);
-  // Preenche termos independentes e zera o vetor de soluções (x0)
-  for(i=0; i<n; ++i)
-  {
-    b[i] = independentTermGenerator((i*M_PI)/n);
-    x[i] = 0.0;
-  }
   // Aloca diagonais
-  double **A = (double**)malloc(sizeof(double*)*nBandas);
-  for(i=0; i<=nBandas; ++i)
+  double **A = (double**)malloc(sizeof(double*)*((nBandas/2)+1));
+  for(i=0; i<=((nBandas/2)+1); ++i)
   {
     A[i] = (double*)malloc(sizeof(double)*n);
     // Preenche as diagonais randomicamente
     generateRandomDiagonal(n, i, nBandas, A[i]);
   }
 
-
-  // ===========================================================================
-  // Impressão das diagonais da matriz (Debug)
-  printf("===========================================================================\n");
-  printf("Impressão das diagonais da matriz (Debug)\n\n");
-  for(i=0; i<=nBandas; ++i)
+  // Preenche termos independentes e zera o vetor de soluções (x0)
+  for(i=0; i<n; ++i)
   {
-    for(j=0; j<n; ++j)
-    {
-      printf("%.6lf ", A[i][j]);
-    }
-    printf("\n");
+    b[i] = independentTermGenerator((i*M_PI)/n);
+    x[i] = 0.0;
   }
-  puts("======================================");
-  for(j=0; j<n; ++j)
-  {
-    printf("%.6lf ", b[j]);
-  }
-  printf("\n");
-  printf("===========================================================================\n");
-  // ===========================================================================
 
+  conjugateGradients(A,b,x, n, (nBandas/2)+1, maxIter, tolerance, outFileName);
 
-  conjugateGradients(A,b,x, n, nBandas, maxIter, tolerance, outFileName);
-
-  return (0);
+  return(0);
 }
