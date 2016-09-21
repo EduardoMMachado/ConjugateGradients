@@ -15,15 +15,20 @@ double timestamp()
 
 
 // =============================================================================
-int residueCalculator(double *r, double stepSize, double *z, unsigned int N)
+double residueCalculator(double *r, double stepSize, double *z, unsigned int N)
 {
+  double rTimeStart, rTimeEnd;
+
+  rTimeStart = timestamp();
   // Calcula o resíduo de acordo com o passo
 	for (int i = 0; i < N ;++i)
   {
 		r[i] = r[i] - (stepSize * z[i]);
 	}
+  rTimeEnd = timestamp();
 
-	return(0);
+  
+	return rTimeEnd - rTimeStart;
 }
 // =============================================================================
 
@@ -34,7 +39,7 @@ double normCalculator(double *r, unsigned int N)
   // Inicializa a norma
 	double norm = 0;
 
-  // Calcula Rt*R
+  // Soma a norma atual com Rt*r
 	for (int i = 0; i < N ;++i)
   {
 		norm += r[i] * r[i];
@@ -50,7 +55,7 @@ double normCalculator(double *r, unsigned int N)
 // =============================================================================
 int conjugateGradients(double **A, double *b, double *x, unsigned int N, unsigned int k, unsigned int maxIter, unsigned int tolerance, const char *outFileName){
 	unsigned int n_iter = 0;																											// Número de iterações feitas
-	double rTimeMin, rTimeMean, rTimeMax, rTimeStart, rTimeEnd, rTime;						// Tempos de resíduo
+	double rTimeMin, rTimeMean, rTimeMax, rTime;						// Tempos de resíduo
 	double cgTimeMin, cgTimeMean, cgTimeMax, cgTimeStart, cgTimeEnd, cgTime;			// Tempos do cálculo do método
 	double stepSize, aux, aux1, m, vtz;
 	int i, j, jv;
@@ -131,9 +136,8 @@ int conjugateGradients(double **A, double *b, double *x, unsigned int N, unsigne
 
 
 		// Calculo dos resíduos
-		rTimeStart = timestamp();
-		residueCalculator(r, stepSize, z, N);
-		rTimeEnd = timestamp();
+		
+		rTime = residueCalculator(r, stepSize, z, N);
 
     // aux1 = Rt * R
     aux1 = 0.0;
@@ -157,23 +161,28 @@ int conjugateGradients(double **A, double *b, double *x, unsigned int N, unsigne
 		// Calculo de tempos de execução
 		cgTimeEnd = timestamp();
 		cgTime = cgTimeEnd - cgTimeStart;
-		if(n_iter == 1)
+    
+    if(n_iter == 1)
 		{
-			cgTimeMin = cgTime;
-			cgTimeMean = cgTime;
-			cgTimeMax = cgTime;
+			rTimeMin = rTime;
+			rTimeMean = rTime;
+			rTimeMax = rTime;
+
+      cgTimeMin = cgTime;
+      cgTimeMean = cgTime;
+      cgTimeMax = cgTime;
+
 		}
 		else
 		{
 			if(cgTime < cgTimeMin) cgTimeMin = cgTime;
 			else if(cgTime > cgTimeMax) cgTimeMax = cgTime;
-			cgTimeMean += cgTime;
+			cgTimeMean = (cgTimeMin + cgTimeMax)/2;
 		}
 
-		rTime = rTimeEnd - rTimeStart;
 		if(rTime < rTimeMin) rTimeMin = rTime;
 		else if(rTime > rTimeMax) rTimeMax = rTime;
-		rTimeMean += rTime;
+		rTimeMean = (rTimeMin+rTimeMax)/2;
 
     // Incrementa o número de iterações
 		n_iter++;
@@ -184,15 +193,18 @@ int conjugateGradients(double **A, double *b, double *x, unsigned int N, unsigne
     error[n_iter] = abs(norm[n_iter] - norm[n_iter-1]);
 	}
 
+
+
+  // =========================================
   // Escrita dos resultados no arquivo de saída
   outFile = fopen(outFileName, "w");
 
   fprintf(outFile, "###########\n");
   fprintf(outFile, "# Tempo Método CG: %lf %lf %lf\n", cgTimeMin, cgTimeMean, cgTimeMax);
-  fprintf(outFile, "# Tempo Resíduo: %lf %lf %lf\n", cgTimeMin, cgTimeMean, cgTimeMax);
+  fprintf(outFile, "# Tempo Resíduo: %lf %lf %lf\n", rTimeMin, rTimeMean, rTimeMax);
   fprintf(outFile, "# \n");
   fprintf(outFile, "# Norma Euclidiana do Residuo e Erro aproximado\n");
-  for(i = 0; i < n_iter; ++i)
+  for(i = 1; i < n_iter; ++i)
   {
     fprintf(outFile, "# i=%d %lf %lf\n", i, norm[i], error[i]);
   }

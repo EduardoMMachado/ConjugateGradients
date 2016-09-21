@@ -9,7 +9,7 @@
 
 double timestamp(void);
 
-int residueCalculator(double *r, double stepSize, double *z, unsigned int N);
+double residueCalculator(double *r, double stepSize, double *z, unsigned int N);
 
 double normCalculator(double *r, unsigned int N);
 
