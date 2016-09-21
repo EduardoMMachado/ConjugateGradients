@@ -2,6 +2,7 @@
 // 2016
 
 #include "linearSystemCreator.h"
+#include "cgMethod.h"
 
 int main(int argc, char const *argv[])
 {
@@ -77,9 +78,12 @@ int main(int argc, char const *argv[])
     generateRandomDiagonal(n, i, nBandas, A[i]);
   }
 
+
   // ===========================================================================
   // Impressão das diagonais da matriz (Debug)
-  for(i=0; i<=nBandas; ++i)
+  printf("===========================================================================\n");
+  printf("Impressão das diagonais da matriz (Debug)\n\n");
+  for(i=0; i<nBandas; ++i)
   {
     for(j=0; j<n; ++j)
     {
@@ -87,15 +91,17 @@ int main(int argc, char const *argv[])
     }
     printf("\n");
   }
+
   for(j=0; j<n; ++j)
   {
     printf("%.5lf ", b[j]);
   }
   printf("\n");
+  printf("===========================================================================\n");
   // ===========================================================================
 
 
-
+  conjugateGradients(A,b,x, n, nBandas, maxIter, tolerance, outFileName);
 
   return (0);
 }

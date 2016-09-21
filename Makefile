@@ -17,7 +17,7 @@ linearSystemCreator:
 
 cgMethod:
 	$(CC) -c $(SRC)/cgMethod.c $(FLAGS) -I$(INCLUDE) -o $(OBJ)/cgMethod.o
-	ar -cru $(LIB)/cgMethod.a $(OBJ)/cgMethod
+	ar -cru $(LIB)/cgMethod.a $(OBJ)/cgMethod.o
 
 clean:
 	rm linearSystemCreator core $(SRC)/*~ $(OBJ)/*o $(LIB)/*a

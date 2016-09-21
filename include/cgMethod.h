@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include <time.h>
+#include <sys/time.h>
 
 double timestamp(void);
 
@@ -25,4 +25,4 @@ double normCalculator(double *r, unsigned int N);
 //	tolerance = o erro aproximado absoluto máximo (se houver)
 // 	outFileName = nome do arquivo de saida
 // =============================================================================
-int conjugateGradients(double **A, double *b, double *x, unsigned int N, unsigned int k, unsigned int maxIter, unsigned int tolerance, char *outFileName);
+int conjugateGradients(double **A, double *b, double *x, unsigned int N, unsigned int k, unsigned int maxIter, unsigned int tolerance, const char *outFileName);
