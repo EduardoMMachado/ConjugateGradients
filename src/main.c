@@ -40,7 +40,6 @@ int main(int argc, char const *argv[])
   }
   if(maxIter == 0) maxIter = n;
 
-
   // Validação dos argumentos
   if(n<=0)
   {
@@ -62,14 +61,13 @@ int main(int argc, char const *argv[])
   // Inicialiador randomico
   srand(20162);
 
-
   // Aloca vetor de termos independentes
   double *b = (double*)malloc(sizeof(double)*n);
   // Aloca vetor de soluções lineares
   double *x = (double*)malloc(sizeof(double)*n);
   // Aloca diagonais
   double **A = (double**)malloc(sizeof(double*)*((nBandas/2)+1));
-  for(i=0; i<=((nBandas/2)+1); ++i)
+  for(i = 0; i < ((nBandas/2)+1); ++i)
   {
     A[i] = (double*)malloc(sizeof(double)*n);
     // Preenche as diagonais randomicamente
@@ -83,7 +81,17 @@ int main(int argc, char const *argv[])
     x[i] = 0.0;
   }
 
-  conjugateGradients(A,b,x, n, (nBandas/2)+1, maxIter, tolerance, outFileName);
+  // Execução do método
+  conjugateGradients(A, b, x, n, (nBandas/2)+1, maxIter, tolerance, outFileName);
+
+  // Desalocação dos vetores e matrizes
+  for(i = 0; i < ((nBandas/2)+1); ++i)
+  {
+      free(A[i]);
+  }
+  free(A);
+  free(b);
+  free(x);
 
   return(0);
 }

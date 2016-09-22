@@ -27,7 +27,7 @@ double residueCalculator(double *r, double stepSize, double *z, unsigned int N)
 	}
   rTimeEnd = timestamp();
 
-  
+
 	return rTimeEnd - rTimeStart;
 }
 // =============================================================================
@@ -53,7 +53,7 @@ double normCalculator(double *r, unsigned int N)
 
 
 // =============================================================================
-int conjugateGradients(double **A, double *b, double *x, unsigned int N, unsigned int k, unsigned int maxIter, unsigned int tolerance, const char *outFileName){
+int conjugateGradients(double **A, double *b, double *x, unsigned int N, unsigned int k, unsigned int maxIter, double tolerance, const char *outFileName){
 	unsigned int n_iter = 0;																											// Número de iterações feitas
 	double rTimeMin, rTimeMean, rTimeMax, rTime;						// Tempos de resíduo
 	double cgTimeMin, cgTimeMean, cgTimeMax, cgTimeStart, cgTimeEnd, cgTime;			// Tempos do cálculo do método
@@ -65,10 +65,10 @@ int conjugateGradients(double **A, double *b, double *x, unsigned int N, unsigne
 	double *r = (double*) malloc(N*sizeof(double));
 	double *norm = (double*) malloc(maxIter*sizeof(double));
 	double *error = (double*) malloc(maxIter*sizeof(double));
-
 	// Aloca vetores auxiliares do metodo
 	double *v = (double*) malloc(N*sizeof(double));
 	double *z = (double*) malloc(N*sizeof(double));
+
 
   // Estabelece
 	// R=B
@@ -78,6 +78,7 @@ int conjugateGradients(double **A, double *b, double *x, unsigned int N, unsigne
     v[i] = r[i] = b[i];
   }
 
+
   // Calcula
 	// aux = Rt * R
 	aux = 0.0;
@@ -86,15 +87,18 @@ int conjugateGradients(double **A, double *b, double *x, unsigned int N, unsigne
 		aux += r[i]*r[i];
 	}
 
+
 	// Inicializa os resíduos e norma para a iteração 0
 	norm[n_iter] = normCalculator(r, N);
 	error[n_iter] = norm[n_iter];
 
+
   // Fica no laço enquando o erro é maior que a tolerancia e ainda não foi
   // executado o número máximo de iterações
-	while((n_iter < maxIter) && (error[n_iter] > tolerance))
+	while((n_iter <= maxIter)&&(error[n_iter] > tolerance))
 	{
 		cgTimeStart = timestamp();
+
 
     // Calcula
 		// Z = A * V
@@ -102,7 +106,7 @@ int conjugateGradients(double **A, double *b, double *x, unsigned int N, unsigne
   	for (i = 0; i < N; ++i)
     {
   		jv = i;
-    	for (j = 0; j <= k; ++j)
+    	for (j = 0; j < k; ++j)
       {
 	      z[i] += A[j][i] * v[jv];
 
@@ -116,6 +120,7 @@ int conjugateGradients(double **A, double *b, double *x, unsigned int N, unsigne
       }
   	}
 
+
     // Calcula
     // vtz = Vt * Z
     vtz = 0.0;
@@ -123,6 +128,7 @@ int conjugateGradients(double **A, double *b, double *x, unsigned int N, unsigne
     {
       vtz += v[i]*z[i];
     }
+
 
     // Calcula
   	// s = (Rt * R) / (Vt * Z)
@@ -136,8 +142,8 @@ int conjugateGradients(double **A, double *b, double *x, unsigned int N, unsigne
 
 
 		// Calculo dos resíduos
-		
 		rTime = residueCalculator(r, stepSize, z, N);
+
 
     // aux1 = Rt * R
     aux1 = 0.0;
@@ -145,10 +151,9 @@ int conjugateGradients(double **A, double *b, double *x, unsigned int N, unsigne
     {
       aux1 += r[i]*r[i];
     }
-
     m = aux1 / aux;
-
     aux = aux1;
+
 
     //calcula novo vetor de direçoes
 		for (i = 0; i < N; i++)
@@ -157,11 +162,9 @@ int conjugateGradients(double **A, double *b, double *x, unsigned int N, unsigne
     }
 
 
-
 		// Calculo de tempos de execução
 		cgTimeEnd = timestamp();
 		cgTime = cgTimeEnd - cgTimeStart;
-    
     if(n_iter == 1)
 		{
 			rTimeMin = rTime;
@@ -180,19 +183,22 @@ int conjugateGradients(double **A, double *b, double *x, unsigned int N, unsigne
 			cgTimeMean = (cgTimeMin + cgTimeMax)/2;
 		}
 
+
 		if(rTime < rTimeMin) rTimeMin = rTime;
 		else if(rTime > rTimeMax) rTimeMax = rTime;
 		rTimeMean = (rTimeMin+rTimeMax)/2;
+
 
     // Incrementa o número de iterações
 		n_iter++;
 
     // Calculo da norma
     norm[n_iter] = normCalculator(r, N);
-    // Calculo do erro
-    error[n_iter] = abs(norm[n_iter] - norm[n_iter-1]);
-	}
 
+    // Calculo do erro
+    error[n_iter] = fabs(norm[n_iter] - norm[n_iter-1]);
+
+	}
 
 
   // =========================================
@@ -200,13 +206,13 @@ int conjugateGradients(double **A, double *b, double *x, unsigned int N, unsigne
   outFile = fopen(outFileName, "w");
 
   fprintf(outFile, "###########\n");
-  fprintf(outFile, "# Tempo Método CG: %lf %lf %lf\n", cgTimeMin, cgTimeMean, cgTimeMax);
-  fprintf(outFile, "# Tempo Resíduo: %lf %lf %lf\n", rTimeMin, rTimeMean, rTimeMax);
+  fprintf(outFile, "# Tempo Método CG: %lfms %lfms %lfms\n", cgTimeMin, cgTimeMean, cgTimeMax);
+  fprintf(outFile, "# Tempo Resíduo: %lfms %lfms %lfms\n", rTimeMin, rTimeMean, rTimeMax);
   fprintf(outFile, "# \n");
   fprintf(outFile, "# Norma Euclidiana do Residuo e Erro aproximado\n");
   for(i = 1; i < n_iter; ++i)
   {
-    fprintf(outFile, "# i=%d %lf %lf\n", i, norm[i], error[i]);
+    fprintf(outFile, "# i=%d\t%.50lf\t%.50lf\n", i, norm[i], error[i]);
   }
   fprintf(outFile, "###########\n");
   fprintf(outFile, "%d\n", N);
@@ -215,6 +221,18 @@ int conjugateGradients(double **A, double *b, double *x, unsigned int N, unsigne
     fprintf(outFile, "%lf ", x[i]);
   }
   fprintf(outFile, "\n###########\n");
+
+  fclose(outFile);
+  // =========================================
+
+
+  // Desaloca vetores de resíduo e norma
+  free(r);
+  free(norm);
+  free(error);
+  // Desaloca vetores auxiliares do metodo
+  free(v);
+  free(z);
 
 
 	return(0);
