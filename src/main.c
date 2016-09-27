@@ -9,13 +9,13 @@ int main(int argc, char const *argv[])
 	// Variáveis para parâmetros de entrada
 	unsigned int n, nBandas, maxIter = 0;
 	double tolerance = 0;
-	const char *outFileName;
+	char *outFileName;
 	// Demais variáveis
-	unsigned int i;
+	unsigned int i, unsignedZero = 0;
 
 
 	// Verifica o número de parâmetros de entrada
-	if(argc < 3)
+	if((unsigned int)argc < 3)
 	{
 		fprintf(stderr, "Parametros insuficientes.\n");
 		fprintf(stderr, "Use:\n");
@@ -32,11 +32,11 @@ int main(int argc, char const *argv[])
 	// Leitura dos parâmetros
 	n = atoi(argv[1]);
 	nBandas = atoi(argv[2]);
-	for(i=3; i<argc; ++i)
+	for(i = 3; i < (unsigned int)argc; ++i)
 	{
 		if(strcmp(argv[i], "-i") == 0) maxIter = atoi(argv[i+1]);
 		else if(strcmp(argv[i], "-t") == 0) tolerance = atof(argv[i+1]);
-		else if(strcmp(argv[i], "-o") == 0) outFileName = argv[i+1];
+		else if(strcmp(argv[i], "-o") == 0) outFileName = (char*)argv[i+1];
 	}
 	if(maxIter == 0) maxIter = n;
 
@@ -46,14 +46,19 @@ int main(int argc, char const *argv[])
 		fprintf(stderr, "Dimensão do sistema linear inválido.\n");
 		return(-1);
 	}
-	else if((nBandas<0)||(nBandas > n/2)||(nBandas%2 == 0))
+	if((nBandas < unsignedZero)||(nBandas > n/2)||(nBandas%2 == unsignedZero))
 	{
 		fprintf(stderr, "Número de bandas inválido.\n");
 		return(-1);
 	}
-	else if(outFileName == NULL)
+	if(outFileName == NULL)
 	{
 		fprintf(stderr, "Nome do arquivo de saída inválido.\n");
+		return(-1);
+	}
+	if(tolerance < unsignedZero)
+	{
+		fprintf(stderr, "A Tolerancia deve ser um número real maior ou igual a zero.");
 		return(-1);
 	}
 

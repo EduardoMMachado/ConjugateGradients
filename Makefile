@@ -6,10 +6,10 @@ LIB=./lib
 INCLUDE=./include
 SRC=./src
 OBJ=./obj
-FLAGS = -Wall -lm
+FLAGS = -Wall -Wextra -lm -g
 
 main:	linearSystemCreator cgMethod
-	$(CC) $(SRC)/main.c $(OBJ)/linearSystemCreator.o $(OBJ)/cgMethod.o $(FLAGS) -I$(INCLUDE) -L$(LIB) -o sgSolver
+	$(CC) $(SRC)/main.c $(OBJ)/linearSystemCreator.o $(OBJ)/cgMethod.o $(FLAGS) -I$(INCLUDE) -L$(LIB) -o cgSolver
 
 linearSystemCreator:
 	$(CC) -c $(SRC)/linearSystemCreator.c $(FLAGS) -I$(INCLUDE) -o $(OBJ)/linearSystemCreator.o
@@ -20,4 +20,4 @@ cgMethod:
 	ar -cr $(LIB)/cgMethod.a $(OBJ)/cgMethod.o
 
 clean:
-	rm sgSolver core $(SRC)/*~ $(OBJ)/*o $(LIB)/*a
+	rm cgSolver core $(SRC)/*~ $(OBJ)/*o $(LIB)/*a

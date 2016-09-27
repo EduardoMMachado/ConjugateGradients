@@ -9,12 +9,26 @@
 
 double timestamp(void);
 
+// =============================================================================
+// Parametros:
+//	r = vetor de resíduos
+//  stepSize = tamanho do passo
+//  z = A * v
+//	N = dimenção do sistema linear
+// 	outFileName = nome do arquivo de saida
+// =============================================================================
 double residueCalculator(double *r, double stepSize, double *z, unsigned int N);
 
+// =============================================================================
+// Parametros:
+//	r = vetor de resíduos
+//	N = dimenção do sistema linear
+// 	outFileName = nome do arquivo de saida
+// =============================================================================
 double normCalculator(double *r, unsigned int N);
 
 // =============================================================================
-//Parametros:
+// Parametros:
 //	A = matriz de coeficientes do sistema linear
 //	b = vetor de termos independentes
 //	x = vetor soluçao

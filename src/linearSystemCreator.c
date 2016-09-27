@@ -11,7 +11,9 @@
  ***********************/
 int generateRandomDiagonal(unsigned int N, unsigned int k, unsigned int nBandas, double *diag)
 {
-	if ( !diag || N < 3 || nBandas > N/2 || k < 0 || k > nBandas )
+	unsigned int unsignedZero = 0;
+
+	if ( !diag || N < 3 || nBandas > N/2 || k < unsignedZero || k > nBandas )
 		return (-1);
 
 	/* garante valor dominante para diagonal principal */
@@ -19,7 +21,7 @@ int generateRandomDiagonal(unsigned int N, unsigned int k, unsigned int nBandas,
 
 	double invRandMax = 1.0 / (double)RAND_MAX;
 
-	for (int i=0; i < N-k; ++i)
+	for (unsigned int i=0; i < N-k; ++i)
 	{
 		diag[i] = fator + (double)rand() * invRandMax;
 	}
