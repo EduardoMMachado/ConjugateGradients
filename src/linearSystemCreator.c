@@ -12,6 +12,7 @@
 int generateRandomDiagonal(unsigned int N, unsigned int k, unsigned int nBandas, double *diag)
 {
 	unsigned int unsignedZero = 0;
+	unsigned int i;
 
 	if ( !diag || N < 3 || nBandas > N/2 || k < unsignedZero || k > nBandas )
 		return (-1);
@@ -21,7 +22,7 @@ int generateRandomDiagonal(unsigned int N, unsigned int k, unsigned int nBandas,
 
 	double invRandMax = 1.0 / (double)RAND_MAX;
 
-	for (unsigned int i=0; i < N-k; ++i)
+	for (i=0; i < N-k; ++i)
 	{
 		diag[i] = fator + (double)rand() * invRandMax;
 	}

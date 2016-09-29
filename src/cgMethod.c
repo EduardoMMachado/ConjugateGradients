@@ -109,7 +109,6 @@ int conjugateGradients(double **A, double *b, double *x, unsigned int N, unsigne
 				// faz calculo para a parte de baixo da matriz
 				if(((jv-(2*j)) >= unsignedZero)&&(jv != i)&&(i > j))
 				{
-					//z[i] += A[j][i-j] * v[jv-(2*j)];
 					z[i] += A[j][i-j] * v[jv-(2*j)];
 				}
 				jv++;
