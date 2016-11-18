@@ -6,7 +6,7 @@ LIB=./lib
 INCLUDE=./include
 SRC=./src
 OBJ=./obj
-FLAGS = -Wall -Wextra -lm -g
+FLAGS = -Wall -Wextra -lm -g -DLIKWID_PERFMON -O3 -march=native -mtune=intel -mavx
 
 main:	linearSystemCreator cgMethod
 	$(CC) $(SRC)/main.c $(OBJ)/linearSystemCreator.o $(OBJ)/cgMethod.o $(FLAGS) -I$(INCLUDE) -L$(LIB) -o cgSolver
